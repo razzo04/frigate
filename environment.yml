@@ -4,6 +4,9 @@
 # This environment can provide `helm` via the kubernetes-helm package, but must
 # also explicitly install frigate itself within this repo.
 #
+channels:
+  - conda-forge
+
 name: pre-commit-hook-environment
 dependencies:
   - python
