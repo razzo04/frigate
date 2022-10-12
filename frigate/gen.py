@@ -3,6 +3,7 @@ import os.path
 import tempfile
 import shutil
 import subprocess
+import re
 
 from jinja2 import Environment, FileSystemLoader
 from ruamel.yaml import YAML
@@ -13,6 +14,7 @@ from frigate.utils import flatten
 
 yaml = YAML()
 
+extra_value_pattern =  re.compile(r"@(\w+)(?:\s|=)(?:\"(.*)\"|(\w+))")
 
 def load_chart(chartdir, root=None):
     """Load the yaml information from a Helm chart directory.
@@ -222,10 +224,18 @@ def traverse(tree, root=None):
             if isinstance(default, CommentedMap):
                 default = dict(default)
             comment = ""
+            extra_values = {}
             if key in tree.ca.items:
                 comment = get_comment(tree, key)
+                for match in extra_value_pattern.finditer(comment):
+                    comment = comment.replace(match.group(0), "")
+                    if match.group(1).lower() == "default":
+                        default = match.group(2) if match.group(2) else match.group(3)
+                    else:
+                        extra_values[match.group(1)] = match.group(2) if match.group(2) else match.group(3)
+                    
             param = ".".join(root + [key])
-            yield [param, comment, json.dumps(default)]
+            yield [param, comment, json.dumps(default), extra_values]
 
 
 def gen(chartdir, output_format, credits=True, deps=True):
