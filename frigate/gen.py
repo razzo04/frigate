@@ -14,7 +14,7 @@ from frigate.utils import flatten
 
 yaml = YAML()
 
-extra_value_pattern =  re.compile(r"@(\w+)(?:\s|=)(?:\"(.*)\"|(\w+))")
+extra_value_pattern =  re.compile(r"@(\w+)(?:\s|=)(?:\"(.*?)\"|(\w+))")
 
 def load_chart(chartdir,values_file,root=None):
     """Load the yaml information from a Helm chart directory.
