@@ -25,9 +25,15 @@ def cli():
 @click.option(
     "--no-deps", is_flag=True, default=True, help="Do not render dependency values",
 )
-def gen(filename, output_format, no_credits, no_deps):
+@click.option(
+    "--values-file",
+    "values_file",
+    default="values.yaml",
+    help="Path to values file (default 'values.yaml')",
+)
+def gen(filename, output_format, no_credits, no_deps, values_file):
     click.echo(
-        frigate.gen.gen(filename, output_format, credits=no_credits, deps=no_deps)
+        frigate.gen.gen(filename, output_format, credits=no_credits, deps=no_deps, values_file=values_file)
     )
 
 
@@ -60,5 +66,11 @@ def gen(filename, output_format, no_credits, no_deps):
     default=True,
     help="Do not render dependency values",
 )
-def hook(artifact, output_format, no_credits, no_deps):
-    frigate.pre_commit_hook.main(artifact, output_format, credits=no_credits, deps=no_deps)
+@click.option(
+    "--values-file",
+    "values_file",
+    default="values.yaml",
+    help="Path to values file (default 'values.yaml')",
+)
+def hook(artifact, output_format, no_credits, no_deps, values_file):
+    frigate.pre_commit_hook.main(artifact, output_format, credits=no_credits, deps=no_deps, values_file=values_file)

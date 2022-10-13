@@ -16,7 +16,7 @@ yaml = YAML()
 
 extra_value_pattern =  re.compile(r"@(\w+)(?:\s|=)(?:\"(.*)\"|(\w+))")
 
-def load_chart(chartdir, root=None):
+def load_chart(chartdir,values_file,root=None):
     """Load the yaml information from a Helm chart directory.
 
     Load in the `Chart.yaml` and `values.yaml` files from a Helm
@@ -31,14 +31,14 @@ def load_chart(chartdir, root=None):
         values (dict): Contents of `values.yaml` loaded into a dict.
 
     """
-    with open(os.path.join(chartdir, "values.yaml"), "r") as fh:
+    with open(os.path.join(chartdir, values_file), "r") as fh:
         values = yaml.load(fh.read())
     with open(os.path.join(chartdir, "Chart.yaml"), "r") as fh:
         chart = yaml.load(fh.read())
     return chart, list(traverse(values, root=root))
 
 
-def load_chart_with_dependencies(chartdir, root=None):
+def load_chart_with_dependencies(chartdir, values_file, root=None ):
     """
     Load and return dictionaries representing Chart.yaml and values.yaml from
     the Helm chart. If Chart.yaml declares dependencies, recursively merge in
@@ -54,7 +54,7 @@ def load_chart_with_dependencies(chartdir, root=None):
     """
     if root is None:
         root = []
-    chart, values = load_chart(chartdir, root=root)
+    chart, values = load_chart(chartdir,values_file, root=root)
     if "dependencies" in chart:
         # update the helm chart's charts/ folder
         update_chart_dependencies(chartdir)
@@ -238,7 +238,7 @@ def traverse(tree, root=None):
             yield [param, comment, json.dumps(default), extra_values]
 
 
-def gen(chartdir, output_format, credits=True, deps=True):
+def gen(chartdir, output_format, credits=True, deps=True, values_file = "values.yaml"):
     """Generate documentation for a Helm chart.
 
     Generate documentation for a Helm chart given the path to a chart and a
@@ -255,7 +255,7 @@ def gen(chartdir, output_format, credits=True, deps=True):
 
     """
     chart, values = (
-        load_chart_with_dependencies(chartdir) if deps else load_chart(chartdir)
+        load_chart_with_dependencies(chartdir, values_file) if deps else load_chart(chartdir, values_file)
     )
 
     templates = Environment(loader=FileSystemLoader([chartdir, TEMPLATES_PATH]))
