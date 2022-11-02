@@ -18,11 +18,11 @@
 
 The following table lists the configurable parameters of the {{ name | capitalize }} chart and their default values.
 
-| Parameter                | Description             | Default        | Collaudo | Certificazione | Produzione |
-| ------------------------ | ----------------------- | -------------- | -------- | -------------- | ---------- |
+| Parameter                | Description             | Collaudo | Certificazione | Produzione |
+| ------------------------ | ----------------------- | -------- | -------------- | ---------- |
 {%- for (param, comment, default, extra_values) in values -%}
     {%-  if extra_values %}
-| `{{ param }}` | `{{ comment }}` | `{{ default }}` | `{{  extra_values["collaudo"] if extra_values["collaudo"] else '---' }}` | `{{ extra_values["certificazione"] if extra_values["certificazione"] else '---' }}` |  `{{ extra_values["produzione"] if extra_values["produzione"] else '---'}}` |
+| `{{ param }}` | `{{ comment }}`  | `{{  extra_values["collaudo"] if extra_values["collaudo"] else '---' }}` | `{{ extra_values["certificazione"] if extra_values["certificazione"] else '---' }}` |  `{{ extra_values["produzione"] if extra_values["produzione"] else '---'}}` |
     {%- endif -%}
 {%- endfor -%}
 {%- endblock %}
